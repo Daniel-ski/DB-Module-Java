@@ -18,6 +18,9 @@ public class EntityManager<E> implements DBContext<E>{
     private static final String INSERT_QUERY = "INSERT INTO %s (%s) VALUES (%s);" ;
     private static final String SELECT_QUERY = "SELECT * FROM %s %s LIMIT 1;" ;
     private static final String CREATE_QUERY = "CREATE TABLE %s (id INT PRIMARY KEY AUTO_INCREMENT , %s );";
+    private static final  String ALTER_TABLE_QUERY = "ALTER TABLE %s ADD COLUMN %s ;";
+    private static final String GET_ALL_COLUMN_NAMES_BY_TABLE_NAME = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.COLUMNS " +
+            " WHERE `TABLE_SCHEMA` = ? AND `COLUMN_NAME` != 'id' AND `TABLE_NAME` = ? ;";
 
     private Connection connection ;
 
@@ -73,7 +76,69 @@ public class EntityManager<E> implements DBContext<E>{
         return this.createEntity(table,resultSet);
     }
 
-    
+    @Override
+    public void doCreate(Class<E> entity) throws SQLException {
+        String tableName = getTableName(entity);
+
+        Map<String,String> fieldsAndTypes = getAllFieldsAndDataTypes(entity);
+
+        String fieldsAndTypesFormatted = fieldsAndTypes.entrySet().stream()
+                .map(entry -> String.format("%s %s", entry.getKey(), entry.getValue()))
+                .collect(Collectors.joining(", "));
+
+        String query = String.format(CREATE_QUERY,tableName,fieldsAndTypesFormatted);
+
+        connection.prepareStatement(query).execute();
+    }
+
+    @Override
+    public void doAlter(Class<E> entity) throws SQLException {
+        final String tableName = getTableName(entity);
+
+        String alterQuery = String.format(ALTER_TABLE_QUERY,tableName,getNewFields(entity,tableName));
+        connection.prepareStatement(alterQuery).executeUpdate();
+    }
+
+    private String getNewFields(Class<E> entity,String tableName) throws SQLException {
+        StringBuilder result = new StringBuilder();
+        Set<String> fields = getAllFieldsFromTable(tableName);
+
+        Arrays.stream(entity.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(Column.class) && !field.isAnnotationPresent(Id.class))
+                .forEach(field -> {
+                    String fieldName = field.getName();
+                    if (!fields.contains(fieldName)) {
+                        result.append(getNameAndDataTypeOfField(field));
+                    }
+                });
+
+        return result.toString();
+
+    }
+
+    private Map<String,String> getNameAndDataTypeOfField(Field field) {
+        Map<String,String> fieldNameAndType = new HashMap<>();
+
+        fieldNameAndType.put(getSQLColumnName(field),getSQLType(field.getType()));
+
+        return fieldNameAndType;
+    }
+
+    private Set<String> getAllFieldsFromTable(String tableName) throws SQLException {
+        Set<String> allFields = new HashSet<>();
+
+        PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_COLUMN_NAMES_BY_TABLE_NAME);
+            preparedStatement.setString(1,"custom_orm_workshop");
+            preparedStatement.setString(2,tableName);
+
+        ResultSet allColumnNames = preparedStatement.executeQuery();
+
+        while (allColumnNames.next()){
+            allFields.add(allColumnNames.getString(1));
+        }
+
+        return allFields;
+    }
 
     private Map<String,String> getAllFieldsAndDataTypes(Class<E> entity) {
         Field[] fields = Arrays.stream(entity.getDeclaredFields())
