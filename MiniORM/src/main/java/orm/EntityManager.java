@@ -18,6 +18,7 @@ public class EntityManager<E> implements DBContext<E>{
     private static final String INSERT_QUERY = "INSERT INTO %s (%s) VALUES (%s);" ;
     private static final String SELECT_QUERY = "SELECT * FROM %s %s LIMIT 1;" ;
     private static final String CREATE_QUERY = "CREATE TABLE %s (id INT PRIMARY KEY AUTO_INCREMENT , %s );";
+    private static final String DELETE_QUERY = "DELETE FROM %s WHERE %s = %s;";
     private static final  String ALTER_TABLE_QUERY = "ALTER TABLE %s ADD COLUMN %s ;";
     private static final String GET_ALL_COLUMN_NAMES_BY_TABLE_NAME = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.COLUMNS " +
             " WHERE `TABLE_SCHEMA` = ? AND `COLUMN_NAME` != 'id' AND `TABLE_NAME` = ? ;";
@@ -97,6 +98,30 @@ public class EntityManager<E> implements DBContext<E>{
 
         String alterQuery = String.format(ALTER_TABLE_QUERY,tableName,getNewFields(entity,tableName));
         connection.prepareStatement(alterQuery).executeUpdate();
+    }
+
+    @Override
+    public void doDelete(E entity) throws SQLException, IllegalAccessException {
+        final String tableName = getTableName(entity.getClass());
+        final Field idField = getIdColumns(entity.getClass());
+        final String idName = getSQLColumnName(idField);
+        final Object idValue = getFieldValue(entity,idField);
+
+        final String deleteQueryFormatted = String.format(DELETE_QUERY ,tableName,idName,idValue);
+
+        connection.prepareStatement(deleteQueryFormatted).execute();
+    }
+
+    private Object getFieldValue(E entity, Field idField) throws IllegalAccessException {
+        idField.setAccessible(true);
+
+        return idField.get(entity);
+    }
+
+    private Field getIdColumns(Class<?> clazz) {
+        return Arrays.stream(clazz.getDeclaredFields())
+                .filter(f -> f.isAnnotationPresent(Id.class))
+                .findFirst().orElseThrow(() -> new UnsupportedOperationException("Id column missing!"));
     }
 
     private String getNewFields(Class<E> entity,String tableName) throws SQLException {
