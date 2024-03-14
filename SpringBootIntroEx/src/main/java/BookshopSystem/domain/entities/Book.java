@@ -5,6 +5,8 @@ import BookshopSystem.domain.enums.EditionType;
 import jakarta.persistence.*;
 
 import java.text.DateFormat;
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -14,7 +16,7 @@ public class Book extends BaseEntity{
     private String title;
     @Column(length = 1000)
     private String description;
-    @Column
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EditionType editionType;
     @Column(nullable = false)
@@ -22,17 +24,32 @@ public class Book extends BaseEntity{
     @Column(nullable = false)
     private Integer copies;
     @Column(name = "release_date")
-    private DateFormat releaseDate;
-    @Column
+    private LocalDate releaseDate;
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private AgeRestriction ageRestriction;
     @ManyToOne
     private Author author;
-    @OneToMany
+    @ManyToMany
     private Set<Category> categories;
 
     public Book() {
     }
+
+    public Book(String title, EditionType editionType, Double price, Integer copies,
+                LocalDate releaseDate, AgeRestriction ageRestriction, Author author, Set<Category> categories) {
+
+        this.title = title;
+       // this.description = description;
+        this.editionType = editionType;
+        this.price = price;
+        this.copies = copies;
+        this.releaseDate = releaseDate;
+        this.ageRestriction = ageRestriction;
+        this.author = author;
+        this.categories = categories;
+    }
+
 
     public String getTitle() {
         return title;
@@ -74,11 +91,11 @@ public class Book extends BaseEntity{
         this.copies = copies;
     }
 
-    public DateFormat getReleaseDate() {
+    public LocalDate getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(DateFormat releaseDate) {
+    public void setReleaseDate(LocalDate releaseDate) {
         this.releaseDate = releaseDate;
     }
 
