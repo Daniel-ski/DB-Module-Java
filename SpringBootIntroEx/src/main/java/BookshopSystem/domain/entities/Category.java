@@ -1,19 +1,19 @@
 package BookshopSystem.domain.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table
 public class Category extends BaseEntity{
     @Column(nullable = false)
     private String name;
-    @ManyToOne
-    private Book book;
+
 
     public Category(){
+    }
+
+    public Category(String name) {
+        this.name = name;
     }
 
     public String getName(){
@@ -24,11 +24,4 @@ public class Category extends BaseEntity{
         this.name = name;
     }
 
-    public Book getBook() {
-        return book;
-    }
-
-    public void setBook(Book book) {
-        this.book = book;
-    }
 }
