@@ -2,6 +2,7 @@ package BookshopSystem.services.book;
 
 import BookshopSystem.domain.entities.Book;
 import BookshopSystem.domain.enums.AgeRestriction;
+import BookshopSystem.domain.enums.EditionType;
 import BookshopSystem.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,5 +49,29 @@ public class BookServiceImpl implements BookService{
     @Override
     public List<Book> findAllByAgeRestriction(AgeRestriction ageRestriction) {
         return this.bookRepository.findAllByAgeRestriction(ageRestriction).orElseThrow(NoSuchElementException::new);
+    }
+
+    @Override
+    public void printAllByEditionTypeIsAndCopiesLessThan() {
+        this.bookRepository.findAllByEditionTypeIsAndCopiesLessThan(EditionType.GOLD,5000)
+                .orElseThrow(NoSuchElementException::new)
+                .forEach(book -> System.out.println(book.getTitle()));
+    }
+
+    @Override
+    public void printAllByPriceLessThanOrPriceGreaterThan() {
+        this.bookRepository.findAllByPriceLessThanOrPriceGreaterThan(5.00,40.00)
+                .orElseThrow(NoSuchElementException::new)
+                .forEach(book -> System.out.printf("%s - $%.2f%n",book.getTitle(),book.getPrice()));
+    }
+
+    @Override
+    public List<Book> printAllByReleaseDateNot(LocalDate year) {
+       return this.bookRepository.findAllByReleaseDateNot(year).orElseThrow(NoSuchElementException::new);
+    }
+
+    @Override
+    public List<Book> findAllByReleaseDateBefore(LocalDate date) {
+        return this.bookRepository.findAllByReleaseDateBefore(date).orElseThrow(NoSuchElementException::new);
     }
 }
