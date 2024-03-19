@@ -2,9 +2,11 @@ package BookshopSystem.repositories;
 
 import BookshopSystem.domain.entities.Book;
 import BookshopSystem.domain.enums.AgeRestriction;
+import BookshopSystem.domain.enums.EditionType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import javax.xml.crypto.Data;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,4 +19,12 @@ public interface BookRepository extends JpaRepository<Book,Long> {
     ArrayList<Book> getBooksByAuthor_FirstNameAndAuthor_LastNameOrderByReleaseDateDesc(String firstName, String lastName);
 
     Optional< List<Book>> findAllByAgeRestriction(AgeRestriction ageRestriction);
+
+    Optional<List<Book>> findAllByEditionTypeIsAndCopiesLessThan(EditionType editionType,int copies);
+
+    Optional<List<Book>> findAllByPriceLessThanOrPriceGreaterThan(double start,double end);
+
+    Optional<List<Book>> findAllByReleaseDateNot(LocalDate year);
+
+    Optional<List<Book>> findAllByReleaseDateBefore(LocalDate date);
 }
