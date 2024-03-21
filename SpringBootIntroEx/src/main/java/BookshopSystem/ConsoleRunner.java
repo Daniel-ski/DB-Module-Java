@@ -31,7 +31,7 @@ public class ConsoleRunner implements CommandLineRunner {
         this.authorService = authorService;
         this.categoryService = categoryService;
         this.scanner = new Scanner(System.in);
-        ;
+
     }
 
     @Transactional
@@ -44,6 +44,10 @@ public class ConsoleRunner implements CommandLineRunner {
 //        this.seedService.seedCategory();
 //        this.seedService.seedBooks();
 
+//      printAllByReleaseDateBefore();
+//      printAllByReleaseDateNot();
+//      this.bookService.printAllByPriceLessThanOrPriceGreaterThan();
+//      this.bookService.printAllByEditionTypeIsAndCopiesLessThan();
 //      this.printBooksTitleAfterYear();
 //      this.printAuthorsWithBooksBeforeYear();
 //      this.authorService.getAuthorsOrderByNumberOfBooks();
@@ -51,6 +55,24 @@ public class ConsoleRunner implements CommandLineRunner {
 //      this.printBooksTitleByAgeRestriction();
 
 
+    }
+
+    private void printAllByReleaseDateBefore(){
+        final String[] inputDate = scanner.nextLine().split("-");
+
+        final int day = Integer.parseInt(inputDate[0]);
+        final int mount = Integer.parseInt(inputDate[1]);
+        final int year = Integer.parseInt(inputDate[2]);
+
+        this.bookService.findAllByReleaseDateBefore(LocalDate.of(year,mount,day))
+                .forEach(book -> System.out.printf("%s %.2f%n",book.getTitle(),book.getPrice()));
+    }
+
+    private void printAllByReleaseDateNot(){
+        final int inputYear = scanner.nextInt();
+
+        this.bookService.printAllByReleaseDateNot(LocalDate.of(inputYear,1,1))
+                .forEach(book -> System.out.println(book.getTitle()));
     }
 
     private void printBooksTitleByAgeRestriction(){
