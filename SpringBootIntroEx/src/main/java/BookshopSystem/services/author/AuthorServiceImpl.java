@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class AuthorServiceImpl implements AuthorService{
@@ -57,5 +54,14 @@ public class AuthorServiceImpl implements AuthorService{
                 .stream()
                 .sorted(Comparator.comparingInt(author -> author.getBooks().size()))
                 .forEach(a -> System.out.printf("%s %s - %d%n",a.getFirstName(),a.getLastName(),a.getBooks().size()));
+    }
+
+    @Override
+    public void printAuthorsByFirstNameEndsWith() {
+        String suffix = new Scanner(System.in).nextLine();
+
+        this.authorRepository.getAuthorsByFirstNameEndsWith(suffix)
+                .orElseThrow(NoSuchElementException::new)
+                .forEach(author -> System.out.println(author.getFirstName() + " " + author.getLastName()));
     }
 }
