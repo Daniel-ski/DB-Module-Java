@@ -12,4 +12,6 @@ public interface AuthorService {
     List<Author> getDistinctByBooksReleaseDateBefore(LocalDate books_releaseDate);
 
     void getAuthorsOrderByNumberOfBooks();
+
+    void printAuthorsByFirstNameEndsWith();
 }
