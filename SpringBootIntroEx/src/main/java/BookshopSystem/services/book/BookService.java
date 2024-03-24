@@ -1,5 +1,6 @@
 package BookshopSystem.services.book;
 
+import BookshopSystem.domain.dto.BookDto;
 import BookshopSystem.domain.entities.Book;
 import BookshopSystem.domain.enums.AgeRestriction;
 import BookshopSystem.domain.enums.EditionType;
@@ -28,4 +29,8 @@ public interface BookService {
    List<Book> printAllByReleaseDateNot(LocalDate year);
 
     List<Book> findAllByReleaseDateBefore(LocalDate date);
+
+    void findBookCountByTitleIsGreaterThan();
+
+    void findBooksByTitle();
 }
