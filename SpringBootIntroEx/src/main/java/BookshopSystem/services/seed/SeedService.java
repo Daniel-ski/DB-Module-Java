@@ -7,8 +7,8 @@ public interface SeedService {
     void seedBooks() throws IOException;
     void seedCategory() throws IOException;
     default void seedAllData() throws IOException {
+        seedCategory();
         seedAuthors();
         seedBooks();
-        seedCategory();
     }
 }
