@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -73,5 +70,21 @@ public class BookServiceImpl implements BookService{
     @Override
     public List<Book> findAllByReleaseDateBefore(LocalDate date) {
         return this.bookRepository.findAllByReleaseDateBefore(date).orElseThrow(NoSuchElementException::new);
+    }
+
+    @Override
+    public void findBookCountByTitleIsGreaterThan() {
+        String length = new Scanner(System.in).nextLine();
+
+        System.out.println(this.bookRepository.findBookCountByTitleIsGreaterThan(Integer.valueOf(length)).orElseThrow(NoSuchElementException::new));
+    }
+
+    @Override
+    public void findBooksByTitle() {
+        String title = new Scanner(System.in).nextLine();
+
+        this.bookRepository.findBooksByTitle(title)
+                .orElseThrow(NoSuchElementException::new)
+                .forEach(bookDto -> System.out.println(bookDto.toString()));
     }
 }
