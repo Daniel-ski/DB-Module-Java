@@ -1,5 +1,6 @@
 package BookshopSystem.services.book;
 
+import BookshopSystem.domain.entities.Author;
 import BookshopSystem.domain.entities.Book;
 import BookshopSystem.domain.enums.AgeRestriction;
 import BookshopSystem.domain.enums.EditionType;
@@ -8,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class BookServiceImpl implements BookService{
@@ -86,5 +89,52 @@ public class BookServiceImpl implements BookService{
         this.bookRepository.findBooksByTitle(title)
                 .orElseThrow(NoSuchElementException::new)
                 .forEach(bookDto -> System.out.println(bookDto.toString()));
+    }
+
+    @Override
+    public void findAllBooksCopiesByAuthor() {
+        System.out.println(this.bookRepository.findAllBooksCopiesByAuthor("Randy Graham")
+                .orElseThrow(NoSuchElementException::new));
+    }
+
+    @Override
+    public void updateAllBooksCopiesByReleaseDate() {
+        String inputDate = new Scanner(System.in).nextLine();
+        Integer inputCopies = Integer.parseInt(new Scanner(System.in).nextLine());
+
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy",Locale.ENGLISH);
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        try{
+            LocalDate date = LocalDate.parse(inputDate,inputFormatter);
+            String formattedDate = outputFormatter.format(date);
+
+            Integer updateCount = this.bookRepository.updateAllBooksCopiesByReleaseDate(inputCopies, LocalDate.parse(formattedDate));
+
+            System.out.println(updateCount * inputCopies);
+
+        }catch (DateTimeParseException e){
+            System.out.println("Invalid date formatter");
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void deleteBooksByCopiesLessThan() {
+        Integer number = new Scanner(System.in).nextInt();
+
+        System.out.println(this.bookRepository.deleteAllByCopiesLessThan(number));
+    }
+
+    @Override
+    public void totalBooksByAuthor() {
+        String[] authorFullName = new Scanner(System.in).nextLine().split(" ");
+        String firstName = authorFullName[0].trim();
+        String lastName = authorFullName[1].trim();
+
+        Integer totalBooksByAuthor = this.bookRepository.get_total_books_by_author(firstName,lastName);
+
+        System.out.println(totalBooksByAuthor);
     }
 }
