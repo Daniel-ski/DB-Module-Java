@@ -33,4 +33,12 @@ public interface BookService {
     void findBookCountByTitleIsGreaterThan();
 
     void findBooksByTitle();
+
+    void findAllBooksCopiesByAuthor();
+
+    void updateAllBooksCopiesByReleaseDate();
+
+    void deleteBooksByCopiesLessThan();
+
+    void totalBooksByAuthor();
 }
