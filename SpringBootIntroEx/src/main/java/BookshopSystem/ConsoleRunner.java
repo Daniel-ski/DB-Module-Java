@@ -44,6 +44,13 @@ public class ConsoleRunner implements CommandLineRunner {
 //        this.seedService.seedCategory();
 //        this.seedService.seedBooks();
 
+        this.bookService.totalBooksByAuthor();
+//      this.bookService.deleteBooksByCopiesLessThan();
+//      this.bookService.updateAllBooksCopiesByReleaseDate();
+//      this.bookService.findAllBooksCopiesByAuthor();
+//      this.bookService.findBooksByTitle();
+//      this.bookService.findBookCountByTitleIsGreaterThan();
+//      this.authorService.printAuthorsByFirstNameEndsWith();
 //      printAllByReleaseDateBefore();
 //      printAllByReleaseDateNot();
 //      this.bookService.printAllByPriceLessThanOrPriceGreaterThan();
